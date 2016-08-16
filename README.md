@@ -8,14 +8,14 @@ Arduino library for Serial Commands over a serial port
 
 This library is a fork from [scogswell's library](https://github.com/scogswell/ArduinoSerialCommand). 
 
-The main intention of this library was to implement a device able to respond to AT Commands, for example "AT", "AT+RST", "AT+CPMODE=1"; that kind of commands you see a lot on modems or SoCs like the ESP8266 or the SIM900.
+The main intention of this library was to implement a device able to respond to AT Commands, for example "AT", "AT+RST", that kind of commands you see a lot on modems or SoCs like the ESP8266 or the SIM900.
 
 # Examples
 
 For examples please check the "examples" folder inside this library.
 
 Or open examples directly from Arduino:
-  File->Examples->SerialCommand
+  File->Examples->SerialComman
 
 # Usage
 
