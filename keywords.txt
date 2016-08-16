@@ -1,5 +1,9 @@
 SerialCommand	KEYWORD1
-clearBuffer	KEYWORD2
+begin	KEYWORD2
+loop	KEYWORD2
+addCommand	KEYWORD2
+addDefault	KEYWORD2
 next	KEYWORD2
-readSerial	KEYWORD2
-addCommand	KEYWORd2
+sendOK	KEYWORD2
+sendERROR	KEYWORD2
+write	KEYWORD2
