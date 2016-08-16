@@ -19,14 +19,14 @@ Or open examples directly from Arduino:
 
 # Usage
 
-NOTE: Every command used should end with a carriage return (<CR>, ASCII '\r', HEX 0xD). Be careful since not all serial port consoles send it as default.
+**NOTE:** Every command used should end with a carriage return (<CR>, ASCII '\r', HEX 0xD). Be careful since not all serial port consoles send it as default.
 
 ## Commands with no parameters:
 
 Adding a new command requires 2 things, a string and a pointer to void function.
 The string is used to compare user input against available commands.
 The function will be called when the command is received correctly. 
-```
+```c++
 mySerialCMD.addCommand("AT", ping);
 ```
 
@@ -40,7 +40,7 @@ This is well explained on: examples/ping/ping.pde
 ## Commands with parameters:
 
 The declaration for parametric commands is the same as one without parameters
-```
+```c++
 mySerialCMD.addCommand("AT+LED", ledHandler);
 ```
 
@@ -54,7 +54,7 @@ AT+LED=1<CR>
 In order to get the parameters we use the method "next" which return a pointer to the next parameter.
 NOTE: To know if the parameter is valid you should always check if is NULL.
 
-```
+```c++
 param = mySerialCMD.next();
 if (param != NULL) // Do something
 ```
