@@ -10,6 +10,15 @@ This library is a fork from [scogswell's library](https://github.com/scogswell/A
 
 The main intention of this library was to implement a device able to respond to AT Commands, for example "AT", "AT+RST", that kind of commands you see a lot on modems or SoCs like the ESP8266 or the SIM900.
 
+# Types of AT Commands and responses
+
+Type                | Example      | Description 
+------------------- | :----------: | :------------------------------------------------------------------------
+Test Command        | AT+<x>=?     | Test the existence of a command and checks it's range of subparameter(s).
+Read Command        | AT+<x>?      | This command returns the currently set value of the parameters(s).
+Write Command       | AT+<x>=<...> | This command sets the user-definable parameter value(s).
+Execution Command   | AT+<x>       | This command execute a function.
+
 # Examples
 
 For examples please check the "examples" folder inside this library.
