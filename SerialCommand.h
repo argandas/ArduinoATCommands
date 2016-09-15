@@ -10,7 +10,7 @@
 #include <string.h>
 #include <SoftwareSerial.h>
 
-#define SERIAL_CMD_DBG_EN     0     /* Set this value to 1 to enable debugging */
+#define SERIAL_CMD_DBG_EN     1     /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN  16     /* Max length for each serial command */
 
 /*
@@ -23,9 +23,9 @@ const char delimiters[] = "=,?";
  * <CR> = <Carriage Return, 0x0D, 13, '\r'>
  * <LF> = <Line Feed, 0x0A, 10, '\n'>
  */
-const char EOL[] = "\r\n"; 
+const char EOL[] = "\r\n";
 
-class SerialCommand : public Stream
+class SerialCommand: public Stream
 {
     public:
         /**
@@ -67,7 +67,8 @@ class SerialCommand : public Stream
         void addReadCommand(const char* cmd, void(*callback)())
         {
             addCommand(cmd, NULL, callback, NULL, NULL);
-        };
+        }
+        ;
 
         /**
          * Add a write-only command
@@ -78,7 +79,8 @@ class SerialCommand : public Stream
         void addWriteCommand(const char* cmd, void(*callback)())
         {
             addCommand(cmd, NULL, NULL, callback, NULL);
-        };
+        }
+        ;
 
         /**
          * Add a execute-only command
@@ -89,25 +91,15 @@ class SerialCommand : public Stream
         void addExecuteCommand(const char* cmd, void(*callback)())
         {
             addCommand(cmd, NULL, NULL, NULL, callback);
-        };
-
-        /**
-         * Add a read-only command
-         *
-         * @param cmd - Command to listen
-         * @param callback - Read command callback
-         */
-        void addReadCommand(const char* cmd, void(*callback)())
-        {
-            addCommand(cmd, NULL, callback, NULL, NULL);
-        };
+        }
+        ;
 
         /**
          * Default function to execute when no match is found
          *
          * @param callback - Function to execute when command is received
          */
-        void addError(void (*callback)());
+        void addError(void(*callback)());
 
         /* 
          * Return next argument found in command buffer 
@@ -117,12 +109,12 @@ class SerialCommand : public Stream
         /* 
          * Send "OK" message trough the serial port 
          */
-        void sendOK(void); 
+        void sendOK(void);
 
         /* 
          * Send "ERROR" message trough the serial port 
          */
-        void sendERROR(void); 
+        void sendERROR(void);
 
         /* 
          * Virtual methods to match Stream class 
@@ -133,9 +125,12 @@ class SerialCommand : public Stream
         virtual int peek();
         virtual void flush();
 
-  private:
+    private:
+        /* Setup serial port */
+        void setup(uint32_t baud);
+
         /* Sets the command buffer to all '\0' (nulls) */
-        void clear(void); 
+        void clear(void);
 
         /* Send error message and clear buffer */
         void error();
@@ -158,31 +153,32 @@ class SerialCommand : public Stream
         };
 
         /* Data structure to hold Command/Handler function key-value pairs */
-        typedef struct serialCommandCallback {
-            char command[SERIAL_CMD_BUFF_LEN];
-            void (*test)();
-            void (*read)();
-            void (*write)();
-            void (*execute)();
-        }; 
+        typedef struct serialCommandCallback
+        {
+                char command[SERIAL_CMD_BUFF_LEN];
+                void (*test)();
+                void (*read)();
+                void (*write)();
+                void (*execute)();
+        };
 
         /* ESP8266 Serial Port handler */
         serialPorthandler _serialPortHandler;
 
         /* Actual definition for command/handler array */
-        serialCommandCallback  *commandList; 
+        serialCommandCallback *commandList;
 
         /* Buffer of stored characters while waiting for terminator character */
-        char buffer[SERIAL_CMD_BUFF_LEN]; 
+        char buffer[SERIAL_CMD_BUFF_LEN];
 
         /* Pointer to buffer, used to store data in the buffer */
         char* pBuff;
 
         /* State variable used by strtok_r during processing */
-        char* last; 
-        
+        char* last;
+
         /* Number of available commands registered by new() */
-        uint8_t commandCount; 
+        uint8_t commandCount;
 };
 
 #endif //SerialCommand_h

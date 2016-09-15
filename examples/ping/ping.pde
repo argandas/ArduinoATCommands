@@ -1,14 +1,14 @@
 #include <SerialCommand.h>
 
-SerialCommand mySerialCMD(Serial);
+SerialCommand mySerialCMD;
 
 void setup()
 {
-  /* Setup callbacks for SerialCommand commands */
-  mySerialCMD.addCommand("AT", ping);
-  
   /* Setup SerialCommand port */
-  mySerialCMD.begin(9600);
+  mySerialCMD.begin(Serial, 9600);
+  
+  /* Setup callbacks for SerialCommand commands */
+  mySerialCMD.addExecuteCommand("AT", ping);
 }
 
 void loop()
@@ -18,5 +18,6 @@ void loop()
 
 void ping()
 {
+  mySerialCMD.print("Hello world!");
   mySerialCMD.sendOK(); /* Send "OK" message */
 }
