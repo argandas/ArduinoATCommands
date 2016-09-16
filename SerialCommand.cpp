@@ -176,33 +176,28 @@ bool SerialCommand::commandHandler(void)
     int i;
     bool ret = false;
     boolean matched = false;
-    char* token;
-
+    char* token = NULL;
+    char* offset = NULL;
     char userInput[SERIAL_CMD_BUFF_LEN];
 
     memcpy(userInput, buffer, SERIAL_CMD_BUFF_LEN);
 
-    /* Remove EOL */
-    for (int i = 0; i < SERIAL_CMD_BUFF_LEN; i++)
-    {
-        if ((userInput[i] == '\r') || (userInput[i] == '\n'))
-        {
-            userInput[i] = '\0';
-        }
-    }
-
     /* Search for command at start of buffer */
     token = strtok_r(buffer, delimiters, &last);
+
+#if (SERIAL_CMD_DBG_EN == 1)
+    print("User input: (");
+    printHex(Serial, (uint8_t*) userInput, SERIAL_CMD_BUFF_LEN);
+    println(")");
+#endif
 
     if (NULL != token)
     {
 
 #if (SERIAL_CMD_DBG_EN == 1)
-        print("User input: \"");
+        print("Token: \"");
         print(token);
-        print("\" (");
-        printHex(Serial, (uint8_t*) token, SERIAL_CMD_BUFF_LEN);
-        println(")");
+        println("\"");
 #endif
 
         for (i = 0; (i < commandCount); i++)
@@ -215,39 +210,47 @@ bool SerialCommand::commandHandler(void)
 #endif
 
             /* Compare the token against the list of known commands */
-            if (0 == strncmp(token, commandList[i].command, strlen(commandList[i].command)))
+            if (0 == strncmp(token, commandList[i].command, SERIAL_CMD_BUFF_LEN))
             {
 
 #if (SERIAL_CMD_DBG_EN == 1)
                 println("- Match Found!");
-                print("Next char: \"");
-                print(*(char *) (buffer + strlen(token)));
-                print("\", ");
-                print(*(char *) (buffer + strlen(token)), HEX);
-                print(", (");
-                printHex(Serial, ((uint8_t *) buffer + strlen(token)), SERIAL_CMD_BUFF_LEN);
-                println(")");
 #endif
+                offset = (char *) (userInput + strlen(token));
 
                 /* Check for query command */
-                // TODO: Fix test command, it jumps to execute if NULL
-                if ((0 == strncmp((char *) (buffer + strlen(token)), "=?", 2)) && (NULL != *commandList[i].test))
+                if (0 == strncmp(offset, "=?", 2))
                 {
-                    /* Run test callback */
-                    (*commandList[i].test)();
+#if (SERIAL_CMD_DBG_EN == 1)
+                    println("Run test callback");
+#endif
+                    if (NULL != *commandList[i].test)
+                    {
+                        /* Run test callback */
+                        (*commandList[i].test)();
+                    }
                 }
-                else if (('?' == *(char *) (buffer + strlen(token))) && (NULL != *commandList[i].read))
+                else if (('?' == *offset) && (NULL != *commandList[i].read))
                 {
+#if (SERIAL_CMD_DBG_EN == 1)
+                    println("Run read callback");
+#endif
                     /* Run read callback */
                     (*commandList[i].read)();
                 }
-                else if (('=' == *(char *) (buffer + strlen(token))) && (NULL != *commandList[i].write))
+                else if (('=' == *offset) && (NULL != *commandList[i].write))
                 {
+#if (SERIAL_CMD_DBG_EN == 1)
+                    println("Run write callback");
+#endif
                     /* Run write callback */
                     (*commandList[i].write)();
                 }
                 else if (NULL != *commandList[i].execute)
                 {
+#if (SERIAL_CMD_DBG_EN == 1)
+                    println("Run execute callback");
+#endif
                     /* Run execute callback */
                     (*commandList[i].execute)();
                 }
