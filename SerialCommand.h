@@ -10,7 +10,7 @@
 #include <string.h>
 #include <SoftwareSerial.h>
 
-#define SERIAL_CMD_DBG_EN     1     /* Set this value to 1 to enable debugging */
+#define SERIAL_CMD_DBG_EN     0     /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN  32     /* Max length for each serial command */
 
 /*
