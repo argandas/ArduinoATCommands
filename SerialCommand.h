@@ -8,7 +8,6 @@
 #endif
 
 #include <string.h>
-#include <SoftwareSerial.h>
 
 #define SERIAL_CMD_DBG_EN     0     /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN  64     /* Max length for each serial command */
@@ -39,7 +38,6 @@ class SerialCommand: public Stream
          * @param serialPort - Serial port to listen for commands
          * @param baud - Baud rate
          */
-        void begin(SoftwareSerial &serialPort, uint32_t baud);
         void begin(HardwareSerial &serialPort, uint32_t baud);
 
         /**
@@ -147,9 +145,8 @@ class SerialCommand: public Stream
         /* Data structure for serial port handler */
         typedef struct serialPorthandler
         {
-                SoftwareSerial* _soft;
                 HardwareSerial* _hard;
-                bool isSoftSerial;
+                bool isHardSerial;
         };
 
         /* Data structure to hold Command/Handler function key-value pairs */
