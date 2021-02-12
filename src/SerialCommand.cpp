@@ -46,6 +46,19 @@ SerialCommand::SerialCommand() : userErrorHandler(NULL), commandCount(0)
     clear();
 }
 
+void SerialCommand::begin(Serial_ &serialPort, int baud)
+{
+    begin(serialPort, (unsigned long)baud);
+}
+
+void SerialCommand::begin(Serial_ &serialPort, unsigned long baud)
+{
+    /* Save Serial Port configurations */
+    _serialPortHandler._soft = &serialPort;
+    _serialPortHandler._hard = NULL;
+    setup(baud);
+}
+
 void SerialCommand::begin(HardwareSerial &serialPort, int baud)
 {
     begin(serialPort, (unsigned long)baud);
@@ -54,7 +67,7 @@ void SerialCommand::begin(HardwareSerial &serialPort, int baud)
 void SerialCommand::begin(HardwareSerial &serialPort, unsigned long baud)
 {
     /* Save Serial Port configurations */
-    _serialPortHandler.isHardSerial = true;
+    _serialPortHandler._soft = NULL;
     _serialPortHandler._hard = &serialPort;
     setup(baud);
 }
@@ -62,12 +75,13 @@ void SerialCommand::begin(HardwareSerial &serialPort, unsigned long baud)
 void SerialCommand::setup(unsigned long baud)
 {
     /* Begin Serial Port */
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            _serialPortHandler._hard->begin(baud);
-        }
+        _serialPortHandler._hard->begin(baud);
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        _serialPortHandler._soft->begin(baud);
     }
 }
 
@@ -297,12 +311,13 @@ void SerialCommand::addError(void (*callback)())
 size_t SerialCommand::write(uint8_t character)
 {
     size_t bytes = 0;
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            bytes = _serialPortHandler._hard->write(character);
-        }
+        bytes = _serialPortHandler._hard->write(character);
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        bytes = _serialPortHandler._soft->write(character);
     }
     return bytes;
 }
@@ -310,12 +325,13 @@ size_t SerialCommand::write(uint8_t character)
 int SerialCommand::available()
 {
     int bytes = 0;
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            bytes = _serialPortHandler._hard->available();
-        }
+        bytes = _serialPortHandler._hard->available();
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        bytes = _serialPortHandler._soft->available();
     }
     return bytes;
 }
@@ -323,12 +339,13 @@ int SerialCommand::available()
 int SerialCommand::read()
 {
     int bytes = 0;
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            bytes = _serialPortHandler._hard->read();
-        }
+        bytes = _serialPortHandler._hard->read();
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        bytes = _serialPortHandler._soft->read();
     }
     return bytes;
 }
@@ -336,24 +353,26 @@ int SerialCommand::read()
 int SerialCommand::peek()
 {
     int bytes = 0;
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            bytes = _serialPortHandler._hard->peek();
-        }
+        bytes = _serialPortHandler._hard->peek();
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        bytes = _serialPortHandler._soft->peek();
     }
     return bytes;
 }
 
 void SerialCommand::flush()
 {
-    if (_serialPortHandler.isHardSerial)
+    if (NULL != _serialPortHandler._hard)
     {
-        if (NULL != _serialPortHandler._hard)
-        {
-            _serialPortHandler._hard->flush();
-        }
+        _serialPortHandler._hard->flush();
+    }
+    else if (NULL != _serialPortHandler._soft)
+    {
+        _serialPortHandler._soft->flush();
     }
 }
 

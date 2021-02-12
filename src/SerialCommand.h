@@ -16,7 +16,7 @@
 typedef struct
 {
     HardwareSerial *_hard;
-    bool isHardSerial;
+    Serial_ *_soft;
 } serialPorthandler;
 
 /* Data structure to hold Command/Handler function key-value pairs */
@@ -56,7 +56,9 @@ public:
          * @param baud - Baud rate
          */
     void begin(HardwareSerial &serialPort, int baud);
+    void begin(Serial_ &serialPort, int baud);
     void begin(HardwareSerial &serialPort, unsigned long baud);
+    void begin(Serial_ &serialPort, unsigned long baud);
 
     /**
          * Execute this function inside Arduino's loop function.
