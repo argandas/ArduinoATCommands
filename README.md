@@ -1,6 +1,10 @@
-Arduino library for Serial Commands over a serial port
+[![Arduino CI](https://github.com/argandas/SerialCommand/workflows/Arduino_CI/badge.svg)](https://github.com/marketplace/actions/arduino_ci)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/argandas/SerialCommand/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/argandas/serialcommand.svg?maxAge=3600)](https://github.com/argandas/SerialCommand/releases)
 
 # SerialCommand
+
+Arduino library for Serial Commands over a serial port
 
 --------------------------------------------------------------------------------
 
@@ -77,24 +81,3 @@ This library by default only accepts HardwareSerial connections, if you want to 
 
 ## Debugging
 If you are experimenting issues with the commands and don't know why, you may want to debug this library, to do that just set "SERIAL_CMD_DBG_EN" on "SerialCommand.h" to 1.
-
-# License
-
--------------------------------------------------------------------------------
-
-		DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-				Version 2, December 2004 
-
-		Copyright (C) 2014 ITEAD Studio
-
-		Everyone is permitted to copy and distribute verbatim or modified 
-		copies of this license document, and changing it is allowed as long 
-		as the name is changed. 
-
-				DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
-				
-		TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
-
-		0. You just DO WHAT THE FUCK YOU WANT TO.
-
--------------------------------------------------------------------------------

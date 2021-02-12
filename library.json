@@ -1,0 +1,19 @@
+{
+    "name": "SerialCommand",
+    "keywords": "AT, Serial, Command, CLI",
+    "description": "Arduino library for Serial Commands over a serial port",
+    "authors": [
+        {
+            "name": "Hugo Arganda",
+            "email": "hugo.arganda@gmail.com",
+            "maintainer": true
+        }
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://https://github.com/argandas/SerialCommand.git"
+    },
+    "version": "1.0.0",
+    "frameworks": "arduino",
+    "platforms": "*"
+}
