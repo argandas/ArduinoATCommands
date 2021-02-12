@@ -1,5 +1,7 @@
 #include "SerialCommand.h"
 
+#if (SERIAL_CMD_DBG_EN == 1)
+
 static void printHex(Stream &port, uint8_t *data, uint8_t length);
 static void printHex(Stream &port, uint16_t *data, uint8_t length);
 
@@ -37,14 +39,19 @@ void printHex(Stream &port, uint16_t *data, uint8_t length) // prints 16-bit dat
         port.print(" ");
     }
 }
+#endif
 
-SerialCommand::SerialCommand() :
-    commandCount(0), userErrorHandler(NULL)
+SerialCommand::SerialCommand() : userErrorHandler(NULL), commandCount(0)
 {
     clear();
 }
 
-void SerialCommand::begin(HardwareSerial &serialPort, uint32_t baud)
+void SerialCommand::begin(HardwareSerial &serialPort, int baud)
+{
+    begin(serialPort, (unsigned long)baud);
+}
+
+void SerialCommand::begin(HardwareSerial &serialPort, unsigned long baud)
 {
     /* Save Serial Port configurations */
     _serialPortHandler.isHardSerial = true;
@@ -52,7 +59,7 @@ void SerialCommand::begin(HardwareSerial &serialPort, uint32_t baud)
     setup(baud);
 }
 
-void SerialCommand::setup(uint32_t baud)
+void SerialCommand::setup(unsigned long baud)
 {
     /* Begin Serial Port */
     if (_serialPortHandler.isHardSerial)
@@ -64,8 +71,8 @@ void SerialCommand::setup(uint32_t baud)
     }
 }
 
-// This checks the Serial stream for characters, and assembles them into a buffer.  
-// When the terminator character (defined by EOL constant) is seen, it starts parsing the 
+// This checks the Serial stream for characters, and assembles them into a buffer.
+// When the terminator character (defined by EOL constant) is seen, it starts parsing the
 // buffer for a prefix command, and calls handlers setup by addCommand() method
 void SerialCommand::loop(void)
 {
@@ -102,9 +109,9 @@ void SerialCommand::error(void)
     clear(); /* Clear buffer */
 }
 
-// Retrieve the next token ("word" or "argument") from the Command buffer.  
-// returns a NULL if no more tokens exist.   
-char* SerialCommand::next(void)
+// Retrieve the next token ("word" or "argument") from the Command buffer.
+// returns a NULL if no more tokens exist.
+char *SerialCommand::next(void)
 {
     return strtok_r(NULL, delimiters, &last);
 }
@@ -112,7 +119,7 @@ char* SerialCommand::next(void)
 void SerialCommand::bufferHandler(char c)
 {
     int len;
-    char* lastChars = NULL;
+    char *lastChars = NULL;
 
     print(c); /* ECHO received command */
 
@@ -121,7 +128,7 @@ void SerialCommand::bufferHandler(char c)
         error(); /* Send ERROR, Buffer overflow */
     }
 
-    *pBuff++ = c; /* Put character into buffer */
+    *pBuff++ = c;  /* Put character into buffer */
     *pBuff = '\0'; /* Always null terminate strings */
 
     if ((pBuff - buffer) > 2) /* Check buffer length */
@@ -158,9 +165,8 @@ bool SerialCommand::commandHandler(void)
 {
     int i;
     bool ret = false;
-    boolean matched = false;
-    char* token = NULL;
-    char* offset = NULL;
+    char *token = NULL;
+    char *offset = NULL;
     char userInput[SERIAL_CMD_BUFF_LEN];
 
     memcpy(userInput, buffer, SERIAL_CMD_BUFF_LEN);
@@ -170,7 +176,7 @@ bool SerialCommand::commandHandler(void)
 
 #if (SERIAL_CMD_DBG_EN == 1)
     print("User input: (");
-    printHex(Serial, (uint8_t*) userInput, SERIAL_CMD_BUFF_LEN);
+    printHex(Serial, (uint8_t *)userInput, SERIAL_CMD_BUFF_LEN);
     println(")");
 #endif
 
@@ -199,7 +205,7 @@ bool SerialCommand::commandHandler(void)
 #if (SERIAL_CMD_DBG_EN == 1)
                 println("- Match Found!");
 #endif
-                offset = (char *) (userInput + strlen(token));
+                offset = (char *)(userInput + strlen(token));
 
                 /* Check for query command */
                 if (0 == strncmp(offset, "=?", 2))
@@ -254,17 +260,16 @@ bool SerialCommand::commandHandler(void)
                 println("- Not a match!");
             }
 #endif
-
         }
     }
 
     return ret;
 }
 
-// Adds a "command" and a handler function to the list of available commands.  
+// Adds a "command" and a handler function to the list of available commands.
 // This is used for matching a found token in the buffer, and gives the pointer
-// to the handler function to deal with it. 
-void SerialCommand::addCommand(const char* cmd, void(*test)(), void(*read)(), void(*write)(), void(*execute)())
+// to the handler function to deal with it.
+void SerialCommand::addCommand(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
 {
 
 #if (SERIAL_CMD_DBG_EN == 1)
@@ -274,7 +279,7 @@ void SerialCommand::addCommand(const char* cmd, void(*test)(), void(*read)(), vo
     println(cmd);
 #endif
 
-    commandList = (serialCommandCallback *) realloc(commandList, (commandCount + 1) * sizeof(serialCommandCallback));
+    commandList = (serialCommandCallback *)realloc(commandList, (commandCount + 1) * sizeof(serialCommandCallback));
     strncpy(commandList[commandCount].command, cmd, SERIAL_CMD_BUFF_LEN);
     commandList[commandCount].test = test;
     commandList[commandCount].read = read;
@@ -284,53 +289,61 @@ void SerialCommand::addCommand(const char* cmd, void(*test)(), void(*read)(), vo
 }
 
 /* Optional user-defined function to call when an error occurs, default is NULL */
-void SerialCommand::addError(void(*callback)())
+void SerialCommand::addError(void (*callback)())
 {
     userErrorHandler = callback;
 }
 
 size_t SerialCommand::write(uint8_t character)
 {
+    size_t bytes = 0;
     if (_serialPortHandler.isHardSerial)
     {
         if (NULL != _serialPortHandler._hard)
         {
-            _serialPortHandler._hard->write(character);
+            bytes = _serialPortHandler._hard->write(character);
         }
     }
+    return bytes;
 }
 
 int SerialCommand::available()
 {
+    int bytes = 0;
     if (_serialPortHandler.isHardSerial)
     {
         if (NULL != _serialPortHandler._hard)
         {
-            return _serialPortHandler._hard->available();
+            bytes = _serialPortHandler._hard->available();
         }
     }
+    return bytes;
 }
 
 int SerialCommand::read()
 {
+    int bytes = 0;
     if (_serialPortHandler.isHardSerial)
     {
         if (NULL != _serialPortHandler._hard)
         {
-            return _serialPortHandler._hard->read();
+            bytes = _serialPortHandler._hard->read();
         }
     }
+    return bytes;
 }
 
 int SerialCommand::peek()
 {
+    int bytes = 0;
     if (_serialPortHandler.isHardSerial)
     {
         if (NULL != _serialPortHandler._hard)
         {
-            return _serialPortHandler._hard->peek();
+            bytes = _serialPortHandler._hard->peek();
         }
     }
+    return bytes;
 }
 
 void SerialCommand::flush()
