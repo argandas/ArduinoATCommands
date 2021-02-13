@@ -41,47 +41,29 @@ void printHex(Stream &port, uint16_t *data, uint8_t length) // prints 16-bit dat
 }
 #endif
 
-SerialCommand::SerialCommand() : userErrorHandler(NULL), commandCount(0)
+SerialCommand::SerialCommand() : userErrorHandler(NULL), _serial(NULL), commandCount(0)
 {
     clear();
 }
 
-void SerialCommand::begin(Serial_ &serialPort, int baud)
+void SerialCommand::begin(SerialPortWrapper &serialPort, int baud)
 {
     begin(serialPort, (unsigned long)baud);
 }
 
-void SerialCommand::begin(Serial_ &serialPort, unsigned long baud)
+void SerialCommand::begin(SerialPortWrapper &serialPort, unsigned long baud)
 {
     /* Save Serial Port configurations */
-    _serialPortHandler._soft = &serialPort;
-    _serialPortHandler._hard = NULL;
-    setup(baud);
-}
-
-void SerialCommand::begin(HardwareSerial &serialPort, int baud)
-{
-    begin(serialPort, (unsigned long)baud);
-}
-
-void SerialCommand::begin(HardwareSerial &serialPort, unsigned long baud)
-{
-    /* Save Serial Port configurations */
-    _serialPortHandler._soft = NULL;
-    _serialPortHandler._hard = &serialPort;
+    _serial = &serialPort;
     setup(baud);
 }
 
 void SerialCommand::setup(unsigned long baud)
 {
     /* Begin Serial Port */
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        _serialPortHandler._hard->begin(baud);
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        _serialPortHandler._soft->begin(baud);
+        _serial->begin(baud);
     }
 }
 
@@ -311,13 +293,9 @@ void SerialCommand::addError(void (*callback)())
 size_t SerialCommand::write(uint8_t character)
 {
     size_t bytes = 0;
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        bytes = _serialPortHandler._hard->write(character);
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        bytes = _serialPortHandler._soft->write(character);
+        bytes = _serial->write(character);
     }
     return bytes;
 }
@@ -325,13 +303,9 @@ size_t SerialCommand::write(uint8_t character)
 int SerialCommand::available()
 {
     int bytes = 0;
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        bytes = _serialPortHandler._hard->available();
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        bytes = _serialPortHandler._soft->available();
+        bytes = _serial->available();
     }
     return bytes;
 }
@@ -339,13 +313,9 @@ int SerialCommand::available()
 int SerialCommand::read()
 {
     int bytes = 0;
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        bytes = _serialPortHandler._hard->read();
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        bytes = _serialPortHandler._soft->read();
+        bytes = _serial->read();
     }
     return bytes;
 }
@@ -353,26 +323,18 @@ int SerialCommand::read()
 int SerialCommand::peek()
 {
     int bytes = 0;
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        bytes = _serialPortHandler._hard->peek();
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        bytes = _serialPortHandler._soft->peek();
+        bytes = _serial->peek();
     }
     return bytes;
 }
 
 void SerialCommand::flush()
 {
-    if (NULL != _serialPortHandler._hard)
+    if (NULL != _serial)
     {
-        _serialPortHandler._hard->flush();
-    }
-    else if (NULL != _serialPortHandler._soft)
-    {
-        _serialPortHandler._soft->flush();
+        _serial->flush();
     }
 }
 

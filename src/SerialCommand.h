@@ -12,12 +12,12 @@
 #define SERIAL_CMD_DBG_EN 0    /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN 64 /* Max length for each serial command */
 
-/* Data structure for serial port handler */
-typedef struct
-{
-    HardwareSerial *_hard;
-    Serial_ *_soft;
-} serialPorthandler;
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) || defined(ARDUINO_SAMD_ZERO)
+//Code in here will only be compiled if an Arduino Leonardo is used.
+#define SerialPortWrapper  Serial_
+#else
+#define SerialPortWrapper HardwareSerial
+#endif
 
 /* Data structure to hold Command/Handler function key-value pairs */
 typedef struct
@@ -50,80 +50,85 @@ public:
     SerialCommand(); //Constructor
 
     /**
-         * Start connection to serial port
-         *
-         * @param serialPort - Serial port to listen for commands
-         * @param baud - Baud rate
-         */
-    void begin(HardwareSerial &serialPort, int baud);
-    void begin(Serial_ &serialPort, int baud);
-    void begin(HardwareSerial &serialPort, unsigned long baud);
-    void begin(Serial_ &serialPort, unsigned long baud);
+     * Start connection to serial port
+     *
+     * @param serialPort - Serial port to listen for commands
+     * @param baud - Baud rate
+     */
+    void begin(SerialPortWrapper &serialPort, int baud);
 
     /**
-         * Execute this function inside Arduino's loop function.
-         */
+     * Start connection to serial port
+     *
+     * @param serialPort - Serial port to listen for commands
+     * @param baud - Baud rate
+     */
+    void begin(SerialPortWrapper &serialPort, unsigned long baud);
+
+    /**
+     * Execute this function inside Arduino's loop function.
+     */
     void loop(void);
 
     /**
-         * Add a new command
-         *
-         * @param cmd - Command to listen
-         * @param test - Test command callback
-         * @param read - Read command callback
-         * @param write - Write command callback
-         * @param execute - Execute command callback
-         */
+     * Add a new command
+     *
+     * @param cmd - Command to listen
+     * @param test - Test command callback
+     * @param read - Read command callback
+     * @param write - Write command callback
+     * @param execute - Execute command callback
+     */
     void addCommand(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)());
 
     /**
-         * Add a read-only command
-         *
-         * @param cmd - Command to listen
-         * @param callback - Read command callback
-         */
+     * Add a read-only command
+     *
+     * @param cmd - Command to listen
+     * @param callback - Read command callback
+     */
     void addReadCommand(const char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, callback, NULL, NULL);
     };
 
     /**
-         * Add a write-only command
-         *
-         * @param cmd - Command to listen
-         * @param callback - Write command callback
-         */
+     * Add a write-only command
+     *
+     * @param cmd - Command to listen
+     * @param callback - Write command callback
+     */
     void addWriteCommand(const char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, NULL, callback, NULL);
     };
 
     /**
-         * Add a execute-only command
-         *
-         * @param cmd - Command to listen
-         * @param callback - Execute command callback
-         */
+     * Add a execute-only command
+     *
+     * @param cmd - Command to listen
+     * @param callback - Execute command callback
+     */
     void addExecuteCommand(const char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, NULL, NULL, callback);
     };
 
     /**
-         * Default function to execute when no match is found
-         *
-         * @param callback - Function to execute when command is received
-         */
+     * Default function to execute when no match is found
+     *
+     * @param callback - Function to execute when command is received
+     */
     void addError(void (*callback)());
 
     /* 
-         * Return next argument found in command buffer 
-         */
+     * Return next argument found in command buffer 
+     */
     char *next(void);
 
     /* 
-         * Send "OK" message trough the serial port 
-         */
+     * Send "OK" message trough the serial port 
+     */
     void sendOK(void);
 
     /* 
@@ -132,8 +137,8 @@ public:
     void sendERROR(void);
 
     /* 
-         * Virtual methods to match Stream class 
-         */
+     * Virtual methods to match Stream class 
+     */
     virtual size_t write(uint8_t);
     virtual int available();
     virtual int read();
@@ -159,8 +164,8 @@ private:
     /* User defined error handler */
     void (*userErrorHandler)();
 
-    /* ESP8266 Serial Port handler */
-    serialPorthandler _serialPortHandler;
+    /* Serial Port handler */
+    SerialPortWrapper * _serial;
 
     /* Actual definition for command/handler array */
     serialCommandCallback *commandList;
