@@ -10,11 +10,19 @@ void setup()
     digitalWrite(pinLED, LOW); /* Default LED OFF */
 
     /* Setup SerialCommand port */
-    mySerialCMD.begin(Serial, 9600);
+    Serial.begin(9600);
 
-    /* Setup callbacks for SerialCommand commands */
-    mySerialCMD.addTestCommand((char*)"AT", &ping);
-    mySerialCMD.addWriteCommand((char*)"AT+LED", &ledHandler);
+    /* 
+     * Setup callbacks for SerialCommand commands: 
+     * PING -> Execute handler
+     */
+    mySerialCMD.addExecuteCommand((char *)"PING", &ping);
+
+    /* 
+     * Setup callbacks for SerialCommand commands: 
+     * AT+LED=X -> Write handler
+     */
+    mySerialCMD.addWriteCommand((char *)"AT+LED", &ledHandler);
 }
 
 void loop()
@@ -24,7 +32,7 @@ void loop()
 
 void ping()
 {
-    mySerialCMD.sendOK(); /* Send "OK" message */
+    Serial.println("OK"); /* Send "OK" message */
 }
 
 /* 
@@ -40,26 +48,29 @@ void ledHandler()
     arg = mySerialCMD.next(); /* Get the next argument from the SerialCommand object buffer */
     if (arg != NULL)          /* Check if argument exists */
     {
-        if (*arg == '1')
+        ok = true;
+        switch (*arg)
         {
-            digitalWrite(pinLED, HIGH);
-            mySerialCMD.println("+LED=ON");
-            ok = true;
-        }
-        else if (*arg == '0')
-        {
-            digitalWrite(pinLED, LOW);
-            mySerialCMD.println("+LED=OFF");
-            ok = true;
+            case  '1':
+                digitalWrite(pinLED, HIGH);
+                Serial.println("+LED=ON");
+                break;
+            case '0':
+                digitalWrite(pinLED, LOW);
+                Serial.println("+LED=OFF");
+                break;
+            default:
+                // Unexpected value
+                ok = false;
         }
     }
 
     if (ok)
     {
-        mySerialCMD.sendOK(); /* Acknowledge the command */
+        Serial.println("OK"); /* Send "OK" message */
     }
     else
     {
-        mySerialCMD.sendERROR(); /* Send ERROR message */
+        Serial.println("\r\nERROR\r\n");
     }
 }

@@ -12,13 +12,6 @@
 #define SERIAL_CMD_DBG_EN 0    /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN 64 /* Max length for each serial command */
 
-#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) || defined(ARDUINO_ARCH_SAM)
-//Code in here will only be compiled if an Arduino Leonardo is used.
-#define SerialPortWrapper  Serial_
-#else
-#define SerialPortWrapper HardwareSerial
-#endif
-
 /* Data structure to hold Command/Handler function key-value pairs */
 typedef struct
 {
@@ -55,15 +48,7 @@ public:
      * @param serialPort - Serial port to listen for commands
      * @param baud - Baud rate
      */
-    void begin(SerialPortWrapper &serialPort, int baud);
-
-    /**
-     * Start connection to serial port
-     *
-     * @param serialPort - Serial port to listen for commands
-     * @param baud - Baud rate
-     */
-    void begin(SerialPortWrapper &serialPort, unsigned long baud);
+    void begin(Stream &serialPort);
 
     /**
      * Execute this function inside Arduino's loop function.
@@ -132,29 +117,17 @@ public:
      */
     void addError(void (*callback)());
 
-    /* 
-     * Return next argument found in command buffer 
-     */
-    char *next(void);
-
-    /* 
-     * Send "OK" message trough the serial port 
-     */
-    void sendOK(void);
-
-    /* 
-         * Send "ERROR" message trough the serial port 
-         */
-    void sendERROR(void);
+    /*  Return next argument found in command buffer */
+    char* next(void);
 
     /* 
      * Virtual methods to match Stream class 
      */
-    virtual size_t write(uint8_t);
-    virtual int available();
-    virtual int read();
-    virtual int peek();
-    virtual void flush();
+    size_t write(uint8_t);
+    int available();
+    int read();
+    int peek();
+    void flush();
 
 private:
     /* Setup serial port */
@@ -176,7 +149,7 @@ private:
     void (*userErrorHandler)();
 
     /* Serial Port handler */
-    SerialPortWrapper * _serial;
+    Stream * _serial;
 
     /* Actual definition for command/handler array */
     serialCommandCallback *commandList;

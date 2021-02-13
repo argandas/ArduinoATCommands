@@ -4,37 +4,59 @@ SerialCommand mySerialCMD;
 
 void setup()
 {
-  /* Setup SerialCommand port */
-  mySerialCMD.begin(Serial, 9600);
-  
-  /* Setup callbacks for SerialCommand commands */
-  mySerialCMD.addCommand((char*)"AT", ping, readHandler, writeHandler, executeHandler);
+    /* Setup SerialCommand port */
+    Serial.begin(9600);
+
+    /* 
+     * Setup callbacks for SerialCommand commands 
+     * AT=? -> Test handler
+     * AT? -> Read handler
+     * AT=X,Y,X -> Write handler
+     * AT -> Execute handler
+     */
+    mySerialCMD.addCommand((char *)"AT", testHandler, readHandler, writeHandler, executeHandler);
 }
 
 void loop()
 {
-  mySerialCMD.loop(); /* Process data from serial port each iteration */
+    mySerialCMD.loop(); /* Process data from serial port each iteration */
 }
 
-void ping()
+void testHandler()
 {
-    mySerialCMD.sendOK(); /* Send "OK" message */
+    sendOK(); /* Send "OK" message */
 }
 
 void readHandler()
 {
-  mySerialCMD.print(__FUNCTION__);
-  mySerialCMD.sendOK(); /* Send "OK" message */
+    Serial.print(__FUNCTION__);
+    char *arg = mySerialCMD.next(); /* Get the next argument from the SerialCommand object buffer */
+    int i = 0;
+    while (arg != NULL)
+    {
+        Serial.print("argument #");
+        Serial.print(++i);
+        Serial.print(": ");
+        Serial.println(arg);
+        arg = mySerialCMD.next(); /* Get the next argument from the SerialCommand object buffer */
+    }
+
+    sendOK(); /* Send "OK" message */
 }
 
 void writeHandler()
 {
-  mySerialCMD.print(__FUNCTION__);
-  mySerialCMD.sendOK(); /* Send "OK" message */
+    Serial.print(__FUNCTION__);
+    sendOK(); /* Send "OK" message */
 }
 
 void executeHandler()
 {
-  mySerialCMD.print(__FUNCTION__);
-  mySerialCMD.sendOK(); /* Send "OK" message */
+    Serial.print(__FUNCTION__);
+    sendOK(); /* Send "OK" message */
+}
+
+void sendOK()
+{
+    Serial.println("OK"); /* Send "OK" message */
 }

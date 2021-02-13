@@ -46,25 +46,10 @@ SerialCommand::SerialCommand() : userErrorHandler(NULL), _serial(NULL), commandC
     clear();
 }
 
-void SerialCommand::begin(SerialPortWrapper &serialPort, int baud)
-{
-    begin(serialPort, (unsigned long)baud);
-}
-
-void SerialCommand::begin(SerialPortWrapper &serialPort, unsigned long baud)
+void SerialCommand::begin(Stream &serialPort)
 {
     /* Save Serial Port configurations */
     _serial = &serialPort;
-    setup(baud);
-}
-
-void SerialCommand::setup(unsigned long baud)
-{
-    /* Begin Serial Port */
-    if (NULL != _serial)
-    {
-        _serial->begin(baud);
-    }
 }
 
 // This checks the Serial stream for characters, and assembles them into a buffer.
@@ -98,10 +83,7 @@ void SerialCommand::error(void)
     {
         (*userErrorHandler)();
     }
-    else
-    {
-        sendERROR();
-    }
+
     clear(); /* Clear buffer */
 }
 
@@ -116,8 +98,6 @@ void SerialCommand::bufferHandler(char c)
 {
     int len;
     char *lastChars = NULL;
-
-    print(c); /* ECHO received command */
 
     if ((pBuff - buffer) > (SERIAL_CMD_BUFF_LEN - 2)) /* Check buffer overflow */
     {
@@ -290,16 +270,6 @@ void SerialCommand::addError(void (*callback)())
     userErrorHandler = callback;
 }
 
-size_t SerialCommand::write(uint8_t character)
-{
-    size_t bytes = 0;
-    if (NULL != _serial)
-    {
-        bytes = _serial->write(character);
-    }
-    return bytes;
-}
-
 int SerialCommand::available()
 {
     int bytes = 0;
@@ -338,12 +308,8 @@ void SerialCommand::flush()
     }
 }
 
-void SerialCommand::sendOK(void)
+size_t SerialCommand::write(uint8_t x)
 {
-    println("\r\nOK\r\n");
-}
-
-void SerialCommand::sendERROR(void)
-{
-    println("\r\nERROR\r\n");
+    (void)x;
+    return 0;
 }
