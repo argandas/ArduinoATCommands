@@ -12,7 +12,7 @@
 #define SERIAL_CMD_DBG_EN 0    /* Set this value to 1 to enable debugging */
 #define SERIAL_CMD_BUFF_LEN 64 /* Max length for each serial command */
 
-#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) || defined(ARDUINO_SAMD_ZERO)
+#if defined(__AVR_ATmega32U4__) || defined(__AVR_ATmega16U4__) || defined(ARDUINO_ARCH_SAM)
 //Code in here will only be compiled if an Arduino Leonardo is used.
 #define SerialPortWrapper  Serial_
 #else
