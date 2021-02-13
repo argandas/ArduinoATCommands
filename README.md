@@ -1,6 +1,6 @@
 [![Arduino CI](https://github.com/argandas/SerialCommand/workflows/Arduino_CI/badge.svg)](https://github.com/marketplace/actions/arduino_ci)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/argandas/SerialCommand/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/argandas/serialcommand.svg?maxAge=3600)](https://github.com/argandas/SerialCommand/releases)
+[![GitHub release](https://img.shields.io/github/v/release/argandas/serialcommand)](https://github.com/argandas/SerialCommand/releases)
 
 # SerialCommand
 
