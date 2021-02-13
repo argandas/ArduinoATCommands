@@ -79,7 +79,7 @@ public:
      * @param write - Write command callback
      * @param execute - Execute command callback
      */
-    void addCommand(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)());
+    void addCommand(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)());
 
     /**
      * Add a read-only command
@@ -87,7 +87,18 @@ public:
      * @param cmd - Command to listen
      * @param callback - Read command callback
      */
-    void addReadCommand(const char *cmd, void (*callback)())
+    void addTestCommand(char *cmd, void (*callback)())
+    {
+        addCommand(cmd, callback, NULL, NULL, NULL);
+    };
+
+    /**
+     * Add a read-only command
+     *
+     * @param cmd - Command to listen
+     * @param callback - Read command callback
+     */
+    void addReadCommand(char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, callback, NULL, NULL);
     };
@@ -98,7 +109,7 @@ public:
      * @param cmd - Command to listen
      * @param callback - Write command callback
      */
-    void addWriteCommand(const char *cmd, void (*callback)())
+    void addWriteCommand(char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, NULL, callback, NULL);
     };
@@ -109,7 +120,7 @@ public:
      * @param cmd - Command to listen
      * @param callback - Execute command callback
      */
-    void addExecuteCommand(const char *cmd, void (*callback)())
+    void addExecuteCommand(char *cmd, void (*callback)())
     {
         addCommand(cmd, NULL, NULL, NULL, callback);
     };

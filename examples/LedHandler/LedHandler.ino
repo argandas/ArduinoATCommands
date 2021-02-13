@@ -13,8 +13,8 @@ void setup()
     mySerialCMD.begin(Serial, 9600);
 
     /* Setup callbacks for SerialCommand commands */
-    mySerialCMD.addCommand("AT", ping);
-    mySerialCMD.addCommand("AT+LED", ledHandler);
+    mySerialCMD.addTestCommand((char*)"AT", &ping);
+    mySerialCMD.addWriteCommand((char*)"AT+LED", &ledHandler);
 }
 
 void loop()

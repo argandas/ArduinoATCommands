@@ -8,7 +8,7 @@ void setup()
     mySerialCMD.begin(Serial, 9600);
 
     /* Setup callbacks for SerialCommand commands */
-    mySerialCMD.addExecuteCommand("AT", ping);
+    mySerialCMD.addExecuteCommand((char*)"AT", ping);
 }
 
 void loop()

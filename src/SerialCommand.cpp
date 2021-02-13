@@ -265,7 +265,7 @@ bool SerialCommand::commandHandler(void)
 // Adds a "command" and a handler function to the list of available commands.
 // This is used for matching a found token in the buffer, and gives the pointer
 // to the handler function to deal with it.
-void SerialCommand::addCommand(const char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
+void SerialCommand::addCommand(char *cmd, void (*test)(), void (*read)(), void (*write)(), void (*execute)())
 {
 
 #if (SERIAL_CMD_DBG_EN == 1)
