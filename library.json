@@ -13,7 +13,7 @@
         "type": "git",
         "url": "https://https://github.com/argandas/SerialCommand.git"
     },
-    "version": "1.0.0",
+    "version": "2.0.1",
     "frameworks": "arduino",
     "platforms": "avr,sam"
 }

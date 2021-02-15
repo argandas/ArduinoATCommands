@@ -28,7 +28,7 @@ Execution Command   | AT+<x>       | This command execute a function.
 For examples please check the "examples" folder inside this library.
 
 Or open examples directly from Arduino:
-  File->Examples->SerialComman
+  File->Examples->SerialCommand
 
 # Usage
 
@@ -74,10 +74,9 @@ if (param != NULL) // Do something
 
 This is well explained on: examples/LedHandler/LedHandler.pde
 
-# Configuration
+# Serial Interfaces
 
-## SoftwareSerial
-This library by default only accepts HardwareSerial connections, if you want to use a SoftwareSerial port you only need to change the value of "SERIAL_CMD_SOFT" on "SerialCommand.h" to 1.
+This library is intended to work with any Stream child class like "HardwareSerial" (Most commonly used serial interface), "SoftwareSerial", and "Serial_" (USB CDC Serial).
 
-## Debugging
+# Debug
 If you are experimenting issues with the commands and don't know why, you may want to debug this library, to do that just set "SERIAL_CMD_DBG_EN" on "SerialCommand.h" to 1.
