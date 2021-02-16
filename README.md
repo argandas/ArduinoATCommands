@@ -12,67 +12,69 @@ Arduino library for Serial Commands over a serial port
 
 This library is a fork from [scogswell's library](https://github.com/scogswell/ArduinoSerialCommand). 
 
-The main intention of this library was to implement a device able to respond to AT Commands, for example "AT", "AT+RST", that kind of commands you see a lot on modems or SoCs like the ESP8266 or the SIM900.
-
-# Types of AT Commands and responses
-
-Type                | Example      | Description 
-------------------- | :----------: | :------------------------------------------------------------------------
-Test Command        | AT+<x>=?     | Test the existence of a command and checks it's range of subparameter(s).
-Read Command        | AT+<x>?      | This command returns the currently set value of the parameters(s).
-Write Command       | AT+<x>=<...> | This command sets the user-definable parameter value(s).
-Execution Command   | AT+<x>       | This command execute a function.
-
-# Examples
-
-For examples please check the "examples" folder inside this library.
-
-Or open examples directly from Arduino:
-  File->Examples->SerialCommand
+The main intention of this library is to implement a device able to respond to serial Commands, for example AT Commands ("AT", "AT+RST", etc), that kind of commands you see a lot on modems or SoCs like the ESP8266 or the SIM900.
 
 # Usage
 
-**NOTE:** Every command used should end with a carriage return (<CR>, ASCII '\r', HEX 0xD). Be careful since not all serial port consoles send it as default.
+## Command Syntax
 
-## Commands with no parameters:
+Type                | Syntax             | Description 
+------------------- | :----------------: | :------------------------------------------------------------------------
+Test Command        | <cmd>=?            | Call the test callback defined for the command (if any).
+Read Command        | <cmd>?             | Call the reaad callback defined for the command (if any).
+Write Command       | <cmd>=<p1>,<p2>    | Call the write callback defined for the command (if any).
+Execution Command   | <cmd>              | Call the execute callback defined for the command (if any).
 
-Adding a new command requires 2 things, a string and a pointer to void function.
-The string is used to compare user input against available commands.
-The function will be called when the command is received correctly. 
+## Write Command Example
+
+First, you need to setup the Serial Interface to use by the library, assign the serial port to your SerialCommand class instance, and create a new command (e.g. "LED"):
 ```c++
-mySerialCMD.addCommand("AT", ping);
+SerialCommand mySerial;
+
+void setup() 
+{
+    Serial.being(9600);
+    mySerial.begin(Serial);
+    mySerial.addWriteCommand("LED", writeLED);
+}
 ```
 
-Valid user input:
-```
-AT<CR>
-```
+This will create the command "LED", and will execute the function called "writeLED" everytime a message with the format "LED=X,Y" is received in the "Serial" port.
 
-This is well explained on: examples/ping/ping.pde
+**NOTE:** It is expected that every line received in the serial interface contains the End Of Line characters "\r\n" (<CR><LF>).
 
-## Commands with parameters:
+The function "writeLED" shall be void type and receive no parameters, the write parameters will be obtained trough the "next" method of the SerialCommand class.
 
-The declaration for parametric commands is the same as one without parameters
-```c++
-mySerialCMD.addCommand("AT+LED", ledHandler);
-```
-
-When used these commands should include a '=' char for the first parameter and ',' for trailing parameters.
-
-Valid user input:
-```
-AT+LED=1<CR>
-```
-
-In order to get the parameters we use the method "next" which return a pointer to the next parameter.
-NOTE: To know if the parameter is valid you should always check if is NULL.
+**NOTE:** Only the write command use the "next" method, any other command type does not expect parameters.
 
 ```c++
-param = mySerialCMD.next();
-if (param != NULL) // Do something
+void writeLED() 
+{
+    char *arg;
+    arg = mySerialCMD.next(); /* Get the next argument from the SerialCommand object buffer */
+    if (*arg == '1')
+    {
+        digitalWrite(13, HIGH);
+        Serial.println("+LED=OFF");
+        Serial.println("OK");
+    }
+    else if (*arg == '0') 
+    {
+        digitalWrite(13, LOW);
+        Serial.println("+LED=ON");    
+        Serial.println("OK");
+    }
+    else
+    {
+        Serial.println("ERROR");
+    }
+}
 ```
 
-This is well explained on: examples/LedHandler/LedHandler.pde
+
+## Other examples
+
+For more examples please check the "examples" folder inside this library.
 
 # Serial Interfaces
 
