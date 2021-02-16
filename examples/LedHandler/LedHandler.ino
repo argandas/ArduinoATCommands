@@ -9,9 +9,11 @@ void setup()
     pinMode(pinLED, OUTPUT);   /* Configure the onboard LED as output */
     digitalWrite(pinLED, LOW); /* Default LED OFF */
 
-    /* Setup SerialCommand port */
+    /* Setup Serial port */
     Serial.begin(9600);
-
+    
+    /* Setup SerialCommand class */
+    mySerialCMD.begin(Serial);
     /* 
      * Setup callbacks for SerialCommand commands: 
      * PING -> Execute handler

@@ -4,8 +4,11 @@ SerialCommand mySerialCMD;
 
 void setup()
 {
-    /* Setup SerialCommand port */
+    /* Setup Serial port */
     Serial.begin(9600);
+    
+    /* Setup SerialCommand class */
+    mySerialCMD.begin(Serial);
 
     /* Setup callbacks for SerialCommand commands */
     mySerialCMD.addExecuteCommand((char*)"AT", ping);
