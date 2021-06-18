@@ -1,0 +1,18 @@
+name: Arduino_CI
+on: [push, pull_request]
+jobs:
+  arduino_ci:
+    name: "Arduino CI - OS(Ubuntu)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: Arduino-CI/action@master
+  arduino_lint:
+    name: "Arduino Lint - OS(Ubuntu)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: arduino/arduino-lint-action@v1
+        with:
+          library-manager: update
+          compliance: strict
